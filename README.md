@@ -8,6 +8,9 @@
 [![Sidekiq](https://img.shields.io/badge/sidekiq-7.3-orange.svg)](https://sidekiq.org)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 
+<img src="public/bulletmail.png" alt="Project Logo" width="1920">
+
+
 > **E-mail processing system with intelligent natural language parsing**
 
 A robust Ruby on Rails application that processes .eml email files from multiple vendors, 
@@ -58,6 +61,38 @@ my system handles real human communication, significantly reducing manual interv
 </details>
 
 ---
+## Preview
+
+<details>
+  <summary>Clique para ver a galeria de screenshots</summary>
+
+  <br>
+
+  <table border="0">
+    <tr>
+      <td align="center">
+        <strong>Interface de Clientes</strong><br>
+        <img src="public/Screenshots/customersmail.png" alt="Screenshot da tela de clientes" width="400">
+      </td>
+      <td align="center">
+        <strong>Dashboard Principal</strong><br>
+        <img src="public/Screenshots/dashmail.png" alt="Screenshot do dashboard" width="400">
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <strong>Logs do Sistema</strong><br>
+        <img src="public/Screenshots/logsmail.png" alt="Screenshot da tela de logs" width="400">
+      </td>
+      <td align="center">
+        <strong>Upload de Arquivos</strong><br>
+        <img src="public/Screenshots/uploadmail.png" alt="Screenshot da tela de upload" width="400">
+      </td>
+    </tr>
+  </table>
+
+</details>
+
 
 ##  Table of Contents
 
@@ -106,7 +141,7 @@ git clone https://github.com/bulletdev/EmailProcessorRails.git
 cd EmailProcessorRails
 
 # 2. Configure environment (optional - defaults provided)
-cp .env.example .env
+cp .env
 
 # 3. Build and start all services
 docker-compose up --build
