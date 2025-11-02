@@ -1,0 +1,150 @@
+<div class="animate-fade-in">
+<div class="row mb-4">
+  <div class="col-12">
+    <h1 class="display-4 fw-bold mb-2">
+      <i class="bi bi-file-earmark-text"></i> Email Processing Logs
+    </h1>
+    <p class="text-muted">Monitor email processing status and history</p>
+  </div>
+</div>
+
+<% if @email_logs.any?(&:pending?) %>
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+    <strong>Processing emails...</strong> This page will auto-refresh every 3 seconds.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<% end %>
+
+<div class="mb-3">
+  <%= link_to "All", email_logs_path, class: "btn btn-sm btn-outline-secondary" %>
+  <%= link_to "Success", email_logs_path(status: "success"), class: "btn btn-sm btn-outline-success" %>
+  <%= link_to "Failed", email_logs_path(status: "failed"), class: "btn btn-sm btn-outline-danger" %>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-modern">
+    <thead>
+      <tr>
+        <th style="min-width: 150px;"><i class="bi bi-file-earmark me-1"></i>Filename</th>
+        <th style="min-width: 200px;"><i class="bi bi-person me-1"></i>Sender</th>
+        <th style="min-width: 120px;"><i class="bi bi-check-circle me-1"></i>Status</th>
+        <th style="min-width: 150px;"><i class="bi bi-calendar me-1"></i>Processed At</th>
+        <th style="min-width: 180px;"><i class="bi bi-info-circle me-1"></i>Details</th>
+        <th style="min-width: 120px;"><i class="bi bi-gear me-1"></i>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @email_logs.each do |log| %>
+        <tr>
+          <td class="fw-bold"><%= log.filename %></td>
+          <td><%= log.sender || content_tag(:span, "Unknown", class: "text-muted") %></td>
+          <td>
+            <% if log.success? %>
+              <span class="badge bg-success">✓ Success</span>
+            <% elsif log.failed? %>
+              <span class="badge bg-danger">✗ Failed</span>
+            <% else %>
+              <span class="badge bg-warning text-dark">
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Processing
+              </span>
+            <% end %>
+          </td>
+          <td>
+            <% if log.processed_at %>
+              <%= time_ago_in_words(log.processed_at) %> ago
+            <% else %>
+              <span class="text-muted">Pending</span>
+            <% end %>
+          </td>
+          <td>
+            <% if log.extracted_data.present? %>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#dataModal<%= log.id %>">
+                <i class="bi bi-eye me-1"></i>View Data
+              </button>
+            <% elsif log.error_message.present? %>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#errorModal<%= log.id %>">
+                <i class="bi bi-exclamation-triangle me-1"></i>View Error
+              </button>
+            <% else %>
+              <span class="text-muted small">N/A</span>
+            <% end %>
+          </td>
+          <td>
+            <% if log.pending? %>
+              <span class="text-muted small">
+                <i class="bi bi-hourglass-split"></i> Processing...
+              </span>
+            <% else %>
+              <%= button_to reprocess_email_path(log), method: :post, class: "btn btn-sm btn-primary", data: { turbo_confirm: "Reprocess this email?" } do %>
+                <i class="bi bi-arrow-clockwise"></i> Reprocess
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+
+        <!-- Modal for Extracted Data -->
+        <% if log.extracted_data.present? %>
+          <div class="modal fade" id="dataModal<%= log.id %>" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">
+                    <i class="bi bi-file-earmark-code me-2"></i>Extracted Data - <%= log.filename %>
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <pre class="bg-light p-3 rounded"><%= JSON.pretty_generate(log.extracted_data) %></pre>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Modal for Error Message -->
+        <% if log.error_message.present? %>
+          <div class="modal fade" id="errorModal<%= log.id %>" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                  <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Error - <%= log.filename %>
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="alert alert-danger mb-0">
+                    <%= log.error_message %>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <%= button_to "Reprocess", reprocess_email_path(log), method: :post, class: "btn btn-primary" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-4">
+  <%= paginate @email_logs %>
+</div>
+</div>
+
+<% if @email_logs.any?(&:pending?) %>
+  <script>
+    // Auto-refresh page every 3 seconds when there are pending logs
+    setTimeout(function() {
+      location.reload();
+    }, 3000);
+  </script>
+<% end %>
