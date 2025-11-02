@@ -1,0 +1,8 @@
+# Sidekiq Cron Schedule Configuration
+# Format: https://github.com/sidekiq-cron/sidekiq-cron
+
+cleanup_email_logs:
+  cron: "0 2 * * *"  # Run daily at 2:00 AM
+  class: "CleanupEmailLogsJob"
+  queue: default
+  description: "Clean up email logs older than 90 days"
