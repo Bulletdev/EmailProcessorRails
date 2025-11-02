@@ -1,0 +1,354 @@
+<div class="animate-fade-in">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-4 fw-bold mb-2">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </h1>
+      <p class="text-muted">Welcome to Bullet Mail - Monitor your email processing in real-time</p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="bi bi-envelope-fill"></i>
+        </div>
+        <h2 class="stat-value"><%= @total_emails %></h2>
+        <p class="stat-label">Total Emails</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="stat-value"><%= @successful_emails %></h2>
+        <p class="stat-label">Successful</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="stat-card danger">
+        <div class="stat-icon">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <h2 class="stat-value"><%= @failed_emails %></h2>
+        <p class="stat-label">Failed</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="stat-card warning">
+        <div class="stat-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <h2 class="stat-value"><%= @total_customers %></h2>
+        <p class="stat-label">Customers</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card card-modern">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-bar-chart-line me-2"></i>Analytics</span>
+          <div class="btn-group" role="group">
+            <%= link_to dashboard_path(period: 7), class: "btn btn-sm #{@period == 7 ? 'btn-primary' : 'btn-outline-primary'}" do %>
+              7 Days
+            <% end %>
+            <%= link_to dashboard_path(period: 30), class: "btn btn-sm #{@period == 30 ? 'btn-primary' : 'btn-outline-primary'}" do %>
+              30 Days
+            <% end %>
+            <%= link_to dashboard_path(period: 90), class: "btn btn-sm #{@period == 90 ? 'btn-primary' : 'btn-outline-primary'}" do %>
+              90 Days
+            <% end %>
+            <%= link_to dashboard_path(period: 'all'), class: "btn btn-sm #{@period == 'all' ? 'btn-primary' : 'btn-outline-primary'}" do %>
+              All Time
+            <% end %>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <!-- Pie Chart -->
+            <div class="col-lg-6">
+              <div class="text-center mb-3">
+                <h5><i class="bi bi-pie-chart me-2"></i>Status Distribution</h5>
+                <p class="text-muted small">
+                  <% if @period == 'all' %>
+                    All time data
+                  <% else %>
+                    Last <%= @period %> days
+                  <% end %>
+                </p>
+              </div>
+              <div style="position: relative; height: 300px;">
+                <canvas id="statusPieChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="col-lg-6">
+              <div class="text-center mb-3">
+                <h5><i class="bi bi-graph-up me-2"></i>Emails Processed Per Day</h5>
+                <p class="text-muted small">
+                  <% if @period == 'all' %>
+                    All time data
+                  <% else %>
+                    Last <%= @period %> days
+                  <% end %>
+                </p>
+              </div>
+              <div style="position: relative; height: 300px;">
+                <canvas id="emailsBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="row g-4">
+    <!-- Recent Emails -->
+    <div class="col-lg-7">
+      <div class="card card-modern">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-clock-history me-2"></i>Recent Email Logs</span>
+          <%= link_to email_logs_path, class: "btn btn-sm btn-primary" do %>
+            View All <i class="bi bi-arrow-right"></i>
+          <% end %>
+        </div>
+        <div class="card-body p-0">
+          <% if @recent_logs.any? %>
+            <div class="list-group list-group-flush">
+              <% @recent_logs.each do |log| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">
+                        <i class="bi bi-file-earmark me-1"></i>
+                        <%= log.filename %>
+                      </h6>
+                      <small class="text-muted">
+                        <%= log.sender || 'Unknown sender' %> •
+                        <%= time_ago_in_words(log.created_at) %> ago
+                      </small>
+                    </div>
+                    <div>
+                      <% if log.success? %>
+                        <span class="badge bg-success">✓ Success</span>
+                      <% elsif log.failed? %>
+                        <span class="badge bg-danger">✗ Failed</span>
+                      <% else %>
+                        <span class="badge bg-warning text-dark">
+                          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                          Processing
+                        </span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5 text-muted">
+              <i class="bi bi-inbox display-1 d-block mb-3"></i>
+              <p>No emails processed yet</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Customers -->
+    <div class="col-lg-5">
+      <div class="card card-modern">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-person-plus me-2"></i>New Customers</span>
+          <%= link_to customers_path, class: "btn btn-sm btn-primary" do %>
+            View All <i class="bi bi-arrow-right"></i>
+          <% end %>
+        </div>
+        <div class="card-body p-0">
+          <% if @recent_customers.any? %>
+            <div class="list-group list-group-flush">
+              <% @recent_customers.each do |customer| %>
+                <div class="list-group-item">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                      <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-fill"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-0"><%= customer.name %></h6>
+                      <small class="text-muted">
+                        <%= customer.email || customer.phone %>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5 text-muted">
+              <i class="bi bi-person-x display-1 d-block mb-3"></i>
+              <p>No customers yet</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card card-modern">
+        <div class="card-body text-center py-5">
+          <h3 class="mb-4">Quick Actions</h3>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <%= link_to new_email_path, class: "btn btn-lg btn-primary" do %>
+              <i class="bi bi-cloud-upload me-2"></i>Upload New Email
+            <% end %>
+            <%= link_to email_logs_path, class: "btn btn-lg btn-outline-primary" do %>
+              <i class="bi bi-list-ul me-2"></i>View All Logs
+            <% end %>
+            <%= link_to customers_path, class: "btn btn-lg btn-outline-primary" do %>
+              <i class="bi bi-people me-2"></i>View All Customers
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Chart.js configuration
+  document.addEventListener('DOMContentLoaded', function() {
+    // Status Pie Chart
+    const statusData = {
+      labels: ['Success', 'Failed', 'Pending'],
+      datasets: [{
+        data: [<%= @status_counts[:success] %>, <%= @status_counts[:failed] %>, <%= @status_counts[:pending] %>],
+        backgroundColor: [
+          'rgba(40, 199, 111, 0.8)',  // Green for success
+          'rgba(235, 87, 87, 0.8)',   // Red for failed
+          'rgba(255, 193, 7, 0.8)'    // Yellow for pending
+        ],
+        borderColor: [
+          'rgba(40, 199, 111, 1)',
+          'rgba(235, 87, 87, 1)',
+          'rgba(255, 193, 7, 1)'
+        ],
+        borderWidth: 2
+      }]
+    };
+
+    const statusPieChart = new Chart(
+      document.getElementById('statusPieChart'),
+      {
+        type: 'pie',
+        data: statusData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                padding: 15,
+                font: {
+                  size: 12
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.parsed || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return label + ': ' + value + ' (' + percentage + '%)';
+                }
+              }
+            }
+          }
+        }
+      }
+    );
+
+    // Emails Bar Chart
+    const emailsByDay = <%= raw @emails_by_day.to_json %>;
+    const dates = Object.keys(emailsByDay);
+    const counts = Object.values(emailsByDay);
+
+    // Format dates for display
+    const formattedDates = dates.map(date => {
+      const d = new Date(date);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+
+    const emailsBarData = {
+      labels: formattedDates,
+      datasets: [{
+        label: 'Emails Processed',
+        data: counts,
+        backgroundColor: 'rgba(108, 99, 255, 0.8)',
+        borderColor: 'rgba(108, 99, 255, 1)',
+        borderWidth: 2,
+        borderRadius: 5
+      }]
+    };
+
+    const emailsBarChart = new Chart(
+      document.getElementById('emailsBarChart'),
+      {
+        type: 'bar',
+        data: emailsBarData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Emails: ' + context.parsed.y;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+                precision: 0
+              },
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      }
+    );
+  });
+</script>
