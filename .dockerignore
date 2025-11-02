@@ -1,0 +1,14 @@
+.git
+.gitignore
+.bundle
+.gem
+log/*
+tmp/*
+*.swp
+*.swo
+.DS_Store
+coverage/
+spec/
+test/
+node_modules/
+.env.local
