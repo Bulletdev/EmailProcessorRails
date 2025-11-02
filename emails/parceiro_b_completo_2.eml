@@ -1,0 +1,33 @@
+From: parceirob@example.com
+To: info@company.com
+Subject: Quotation Request - JKL-999
+Date: Wed, 30 Oct 2024 15:20:00 +0000
+Message-ID: <parceiro-b-002@example.com>
+Content-Type: multipart/alternative; boundary="boundary123"
+
+--boundary123
+Content-Type: text/plain; charset=utf-8
+
+Solicitação de Orçamento
+
+Nome do Cliente: Carlos Ferreira
+Email de Contato: carlos.f@tech.com.br
+Telefone: (48) 2211-3344
+Código do Produto: JKL-999
+
+Aguardo retorno.
+
+--boundary123
+Content-Type: text/html; charset=utf-8
+
+<html>
+<body>
+<h2>Solicitação de Orçamento</h2>
+<p><strong>Nome do Cliente:</strong> Carlos Ferreira</p>
+<p><strong>Email de Contato:</strong> carlos.f@tech.com.br</p>
+<p><strong>Telefone:</strong> (48) 2211-3344</p>
+<p><strong>Código do Produto:</strong> JKL-999</p>
+<p>Aguardo retorno.</p>
+</body>
+</html>
+--boundary123--

@@ -1,0 +1,23 @@
+From: fornecedora@example.com
+To: sales@company.com
+Subject: Cotação - Produto ABC-250
+Date: Wed, 30 Oct 2024 11:30:00 +0000
+Message-ID: <fornecedor-a-002@example.com>
+Content-Type: text/html; charset=utf-8
+
+<html>
+<body>
+<p>Prezados,</p>
+
+<p>Solicito cotação para o item abaixo:</p>
+
+<ul>
+<li>Cliente: Maria Santos</li>
+<li>E-mail: maria.santos@empresa.com.br</li>
+<li>Tel: (21) 3344-5566</li>
+<li>Código: ABC-250</li>
+</ul>
+
+<p>Grata,<br>Maria Santos</p>
+</body>
+</html>
