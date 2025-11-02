@@ -1,0 +1,56 @@
+<div class="animate-fade-in">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-4 fw-bold mb-2">
+        <i class="bi bi-people"></i> Customers
+      </h1>
+      <p class="text-muted">View all extracted customer information</p>
+    </div>
+  </div>
+
+  <% if @customers.any? %>
+    <div class="table-responsive">
+      <table class="table table-modern">
+        <thead>
+          <tr>
+            <th><i class="bi bi-person me-1"></i>Name</th>
+            <th><i class="bi bi-envelope me-1"></i>Email</th>
+            <th><i class="bi bi-telephone me-1"></i>Phone</th>
+            <th><i class="bi bi-box me-1"></i>Product Code</th>
+            <th><i class="bi bi-chat-left-text me-1"></i>Subject</th>
+            <th><i class="bi bi-calendar me-1"></i>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @customers.each do |customer| %>
+            <tr>
+              <td class="fw-bold"><%= customer.name %></td>
+              <td><%= customer.email || content_tag(:span, "N/A", class: "text-muted") %></td>
+              <td><%= customer.phone || content_tag(:span, "N/A", class: "text-muted") %></td>
+              <td><span class="badge bg-primary"><%= customer.product_code %></span></td>
+              <td class="small"><%= customer.subject %></td>
+              <td><%= time_ago_in_words(customer.created_at) %> ago</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <%= paginate @customers %>
+    </div>
+  <% else %>
+    <div class="text-center py-5">
+      <div class="card card-modern">
+        <div class="card-body py-5">
+          <i class="bi bi-person-x display-1 text-muted d-block mb-3"></i>
+          <h3>No customers yet</h3>
+          <p class="text-muted">Upload and process emails to see customer data here</p>
+          <%= link_to new_email_path, class: "btn btn-primary mt-3" do %>
+            <i class="bi bi-cloud-upload me-2"></i>Upload Email
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
