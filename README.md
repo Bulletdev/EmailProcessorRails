@@ -165,23 +165,33 @@ open http://localhost:5999
 <summary>Click to expand manual installation steps</summary>
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/bulletdev/EmailProcessorRails.git
+cd EmailProcessorRails
+
+# 1. Install Ruby
 bundle install
 
-# 2. Configure database
-cp config/database.yml.example config/database.yml
-# Edit with your PostgreSQL credentials
+# 2. Configure the database connection
 
-# 3. Create and migrate database
+# The project uses DATABASE_URL. You have two options:
+
+## Option A: Set the environment variable (recommended) export DATABASE_URL="postgresql://postgres:postgres@localhost:5499/email_processor_development"
+# Option B: Configure the database.yml file (if not using the URL)
+# cp config/database.yml.example config/database.yml 
+
+# Edit the config/database.yml file with your credentials.
+
+# 3. Create and migrate the database
 bundle exec rails db:create db:migrate
 
-# 4. Start Redis (separate terminal)
+# 4. Start Redis (in a separate terminal)
 redis-server
 
-# 5. Start Sidekiq (separate terminal)
+# 5. Start Sidekiq (in another separate terminal)
 bundle exec sidekiq
 
-# 6. Start Rails server
+# 6. Start the Rails server
 bundle exec rails server -p 5999
 ```
 
@@ -820,15 +830,16 @@ We welcome contributions! Please follow these steps:
 
 ##  Support
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/EmailProcessorRails/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/EmailProcessorRails/discussions)
+- **Issues:** [GitHub Issues](https://github.com/bulletdev/EmailProcessorRails/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/bulletdev/EmailProcessorRails/discussions)
 - **Documentation:** This README + inline code comments
 
 ---
 
 # Copyright & License
 
-© 2025 BulletOnRails .  All rights reserved.
+© 2025 BulletOnRails .  
+All rights reserved.
 
 
 O código-fonte contido aqui é disponibilizado sob a licença Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
